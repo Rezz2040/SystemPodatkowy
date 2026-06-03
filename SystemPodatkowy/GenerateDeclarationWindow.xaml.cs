@@ -16,18 +16,18 @@ using SystemPodatkowy.ViewModels;
 namespace SystemPodatkowy
 {
 
-    public partial class GenerujDeklaracjeWindow : Window
+    public partial class GenerateDeclarationWindow : Window
     {
-        public GenerujDeklaracjeWindow(int podatnikId)
+        public GenerateDeclarationWindow(int taxpayerID)
         {
             InitializeComponent();
 
-            var vm = new GenerujDeklaracjeViewModel(podatnikId);
+            var vm = new GenerateDeclarationViewModel(taxpayerID);
             this.DataContext = vm;
 
-            if(vm.ZamknijOkno == null)
+            if(vm.CloseAction == null)
             {
-                vm.ZamknijOkno = new Action(this.Close);
+                vm.CloseAction = new Action(this.Close);
             }
         }
     }

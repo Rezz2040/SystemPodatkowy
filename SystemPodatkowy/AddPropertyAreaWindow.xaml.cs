@@ -15,18 +15,18 @@ using SystemPodatkowy.ViewModels;
 
 namespace SystemPodatkowy
 {
-    public partial class DodajPowierzchnieWindow : Window
+    public partial class AddPropertyAreaWindow : Window
     {
-        public DodajPowierzchnieWindow(int podatnikId)
+        public AddPropertyAreaWindow(int taxpayerID)
         {
             InitializeComponent();
 
-            var vm = new DodajPowierzchnieViewModel(podatnikId);
+            var vm = new AddPropertyAreaViewModel(taxpayerID);
             this.DataContext = vm;
 
-            if(vm.ZamknijOkno == null)
+            if(vm.CloseAction == null)
             {
-                vm.ZamknijOkno = new System.Action(this.Close);
+                vm.CloseAction = new System.Action(this.Close);
             }
         }
     }

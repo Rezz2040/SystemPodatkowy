@@ -1,4 +1,4 @@
-﻿<Window x:Class="SystemPodatkowy.DodajPowierzchnieWindow"
+﻿<Window x:Class="SystemPodatkowy.AddPropertyAreaWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Dodaj Powierzchnię" Height="350" Width="400" WindowStartupLocation="CenterScreen">
@@ -18,23 +18,23 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Obręb ewidencyjny:" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NowaPowierzchnia.ObrebEwidencyjny, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewPropertyArea.CadastralDistrict, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Numer działki:" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NowaPowierzchnia.NumerDzialki, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewPropertyArea.PlotNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Nr Księgi Wieczystej:" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NowaPowierzchnia.NumerKsiegiWieczystej}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewPropertyArea.LandRegisteredNumber}" Margin="0,5,0,5"/>
 
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Adres (opcjonalnie):" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NowaPowierzchnia.Adres}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewPropertyArea.Address}" Margin="0,5,0,5"/>
 
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Pow. całkowita (m²):" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding NowaPowierzchnia.PowCalkowitaM2, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding NewPropertyArea.TotalAreaSqm, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
 
         <TextBlock Grid.Row="5" Grid.Column="0" Text="Udział własności (%):" Margin="0,5,10,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UdzialProcentowy, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PercentageShare, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5"/>
 
-        <Button Grid.Row="6" Grid.Column="1" Content="Zapisz działkę" Command="{Binding ZapiszCommand}" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,15,0,0"/>
+        <Button Grid.Row="6" Grid.Column="1" Content="Zapisz działkę" Command="{Binding SaveCommand}" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,15,0,0"/>
     </Grid>
 </Window>

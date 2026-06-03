@@ -15,17 +15,17 @@ using SystemPodatkowy.ViewModels;
 
 namespace SystemPodatkowy
 {
-    public partial class DodajWplateWindow : Window
+    public partial class AddPaymentWindow : Window
     {
-        public DodajWplateWindow(int podatnikId)
+        public AddPaymentWindow(int taxpayerID)
         {
             InitializeComponent();
 
-            var vm = new DodajWplateViewModel(podatnikId);
+            var vm = new AddPaymentViewModel(taxpayerID);
             this.DataContext = vm;
-            if(vm.ZamknijOkno == null)
+            if(vm.CloseAction == null)
             {
-                vm.ZamknijOkno = new System.Action(this.Close);
+                vm.CloseAction = new System.Action(this.Close);
             }
         }
     }
