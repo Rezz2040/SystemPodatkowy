@@ -10,17 +10,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SystemPodatkowy.ViewModels;
 
-namespace SystemPodatkowy
+namespace SystemPodatkowy.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
+            DataContext = viewModel;
         }
     }
 }

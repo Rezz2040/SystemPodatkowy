@@ -12,23 +12,30 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SystemPodatkowy.ViewModels;
+using System.Text.RegularExpressions;
 
-namespace SystemPodatkowy
+namespace SystemPodatkowy.Views
 {
-
-    public partial class GenerateDeclarationWindow : Window
+    public partial class AddPropertyAreaWindow : Window
     {
-        public GenerateDeclarationWindow(int taxpayerID)
+        public AddPropertyAreaWindow(int taxpayerID)
         {
             InitializeComponent();
 
-            var vm = new GenerateDeclarationViewModel(taxpayerID);
+            var vm = new AddPropertyAreaViewModel(taxpayerID);
             this.DataContext = vm;
 
             if(vm.CloseAction == null)
             {
-                vm.CloseAction = new Action(this.Close);
+                vm.CloseAction = new System.Action(this.Close);
             }
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,]+");
+
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SystemPodatkowy.ViewModels;
 
-namespace SystemPodatkowy
+namespace SystemPodatkowy.Views
 {
     public partial class TaxRatesWindow : Window
     {
-        public TaxRatesWindow()
+        public TaxRatesWindow(TaxRatesViewModel vm)
         {
             InitializeComponent();
-            this.DataContext = new TaxRatesViewModel();
+            this.DataContext = vm; ;
         }
 
         private void DecimalTextBox_TextChanged(object sender, TextChangedEventArgs e)

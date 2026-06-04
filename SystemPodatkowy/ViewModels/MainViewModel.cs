@@ -8,16 +8,21 @@ using System.Windows.Input;
 using SystemPodatkowy.Data;
 using SystemPodatkowy.Models;
 using SystemPodatkowy.MVVM;
+using SystemPodatkowy.Views;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System.Windows;
 using LiveCharts;
 using LiveCharts.Wpf;
+using SystemPodatkowy.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SystemPodatkowy.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        public readonly ITaxpayerRepository _repository;
+        private readonly IServiceProvider _serviceProvider;
+
         private ObservableCollection<Taxpayer> _taxpayers;
 
         public ObservableCollection<Taxpayer> Taxpayers
@@ -77,8 +82,12 @@ namespace SystemPodatkowy.ViewModels
         public ICommand DeleteTaxpayerCommand { get; }
 
 
-        public MainViewModel()
+        
+        public MainViewModel(ITaxpayerRepository repository, IServiceProvider serviceProvider)
         {
+            _repository = repository;
+            _serviceProvider = serviceProvider;
+
             LoadTaxpayersCommand = new RelayCommand(LoadFromButton);
             AddTaxpayerCommand = new RelayCommand(OpenAddWindow);
             AddPaymentCommand = new RelayCommand(OpenPaymentWindow, CanOpenActionWindow);
@@ -96,26 +105,17 @@ namespace SystemPodatkowy.ViewModels
 
         private void LoadTaxpayers()
         {
-            using (var context = new TaxSystemContext())
-            {
-                context.Database.EnsureCreated();
+            var listFromDb = ShowDeletedTaxpayers
+                ? _repository.GetAllDeleted()
+                : _repository.GetAllActive();
 
-                var listFromDb = context.Taxpayers
-                    .Include(p => p.Payments)
-                    .Include(p => p.PropertyAreas)
-                    .Include(p => p.TaxDeclarations)
-                        .ThenInclude(d => d.DeclarationItems)
-                    .Where(p => p.IsDeleted == ShowDeletedTaxpayers)
-                    .ToList();
-
-                Taxpayers = new ObservableCollection<Taxpayer>(listFromDb);
-                UpdateChart();
-            }
+            Taxpayers = new ObservableCollection<Taxpayer>(listFromDb);
+            UpdateChart();
         }
 
         private void OpenAddWindow(object parameter)
         {
-            var addWindow = new AddTaxpayerWindow();
+            var addWindow = _serviceProvider.GetRequiredService<AddTaxpayerWindow>();
             addWindow.ShowDialog();
 
             LoadTaxpayers();
@@ -128,9 +128,12 @@ namespace SystemPodatkowy.ViewModels
 
         private void OpenPaymentWindow(object parameter)
         {
-            var paymentWindow = new AddPaymentWindow(SelectedTaxpayer.TaxpayerID);
-            paymentWindow.ShowDialog();
+            var paymentRepo = _serviceProvider.GetRequiredService<IGenericRepository<Payment>>();
 
+            var vm = new AddPaymentViewModel(SelectedTaxpayer.TaxpayerID, paymentRepo);
+            var paymentWindow = new AddPaymentWindow(vm);
+
+            paymentWindow.ShowDialog();
             LoadTaxpayers();
         }
 
@@ -143,7 +146,7 @@ namespace SystemPodatkowy.ViewModels
 
         private void OpenTaxRatesWindow(object parameter)
         {
-            var ratesWindow = new TaxRatesWindow();
+            var ratesWindow = _serviceProvider.GetRequiredService<TaxRatesWindow>();
             ratesWindow.ShowDialog();
         }
 
@@ -155,11 +158,7 @@ namespace SystemPodatkowy.ViewModels
         }
         private void SaveInlineEdit(object parameter)
         {
-            using (var context = new TaxSystemContext())
-            {
-                context.Taxpayers.Update(SelectedTaxpayer);
-                context.SaveChanges();
-            }
+            _repository.Update(SelectedTaxpayer);
 
             MessageBox.Show("Zmiany zostały poprawnie zapisane w bazie danych.", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
             LoadTaxpayers();
@@ -175,14 +174,13 @@ namespace SystemPodatkowy.ViewModels
                 
                 if(result == MessageBoxResult.Yes)
                 {
-                    using(var context = new TaxSystemContext())
+                    if (taxpayerToToggle.IsDeleted)
                     {
-                        var taxpayerInDb = context.Taxpayers.Find(taxpayerToToggle.TaxpayerID);
-                        if(taxpayerInDb != null)
-                        {
-                            taxpayerInDb.IsDeleted = !taxpayerInDb.IsDeleted;
-                            context.SaveChanges();
-                        }
+                        _repository.Restore(taxpayerToToggle);
+                    }
+                    else
+                    {
+                        _repository.Delete(taxpayerToToggle);
                     }
 
                     LoadTaxpayers();
@@ -198,7 +196,7 @@ namespace SystemPodatkowy.ViewModels
                 .Select(t => new
                 {
                     Name = t.CompanyNameOrLastName,
-                    TotalPaid = t.Payments.Sum(p => p.Amount)
+                    TotalPaid = t.Payments?.Sum(p => p.Amount) ?? 0
                 })
                 .Where(t => t.TotalPaid > 0)
                 .OrderByDescending(t => t.TotalPaid)

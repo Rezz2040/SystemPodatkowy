@@ -1,8 +1,7 @@
 ﻿<Application x:Class="SystemPodatkowy.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SystemPodatkowy"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:SystemPodatkowy">
     <Application.Resources>
          
     </Application.Resources>

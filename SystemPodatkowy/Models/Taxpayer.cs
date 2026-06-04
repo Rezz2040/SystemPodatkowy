@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SystemPodatkowy.MVVM;
 
 namespace SystemPodatkowy.Models
 {
     [Table("Podatnicy")]
-    public class Taxpayer
+    public class Taxpayer : BaseViewModel, IDataErrorInfo
     {
         [Key]
         [Column("PodatnikID")]
@@ -66,5 +68,69 @@ namespace SystemPodatkowy.Models
         public virtual ICollection<TaxDeclaration> TaxDeclarations { get; set; }
         public virtual ICollection<PropertyArea> PropertyAreas { get; set; }
         public virtual ICollection<CoOwnership> CoOwnerships { get; set; }
+
+        [NotMapped]
+        public string Error => null;
+
+        [NotMapped]
+        public string this[string columnName]
+        {
+            get
+            {
+                string result = null;
+                switch (columnName)
+                {
+                    case nameof(CompanyNameOrLastName):
+                        if (string.IsNullOrWhiteSpace(CompanyNameOrLastName))
+                            result = "Nazwa/Nazwisko jest wymagane.";
+                        else if (CompanyNameOrLastName.Length < 2)
+                            result = "Nazwa musi mieć co najmniej 2 znaki.";
+                        break;
+
+                    case nameof(City):
+                        if (string.IsNullOrWhiteSpace(City))
+                            result = "Miejscowość jest wymagana.";
+                        break;
+
+                    case nameof(PersonalIdNumber):
+                        if (!string.IsNullOrWhiteSpace(PersonalIdNumber))
+                        {
+                            if (PersonalIdNumber.Length != 11)
+                                result = "PESEL musi składać się z 11 znaków.";
+                            else if (!long.TryParse(PersonalIdNumber, out _))
+                                result = "PESEL może zawierać tylko cyfry.";
+                        }
+                        break;
+
+                    case nameof(TaxIdNumber):
+                        if (!string.IsNullOrWhiteSpace(TaxIdNumber) && TaxIdNumber.Length != 10)
+                            result = "NIP musi składać się dokładnie z 10 znaków.";
+                        break;
+
+                    case nameof(PostalCode):
+                        ;
+                        if (string.IsNullOrWhiteSpace(PostalCode))
+                            result = "Kod pocztowy jest wymagany.";
+                        else if (!System.Text.RegularExpressions.Regex.IsMatch(PostalCode, @"^\d{2}-\d{3}$"))
+                            result = "Kod pocztowy musi być w formacie XX-XXX (np. 30-001).";
+                        break;
+                }
+
+                return result;
+            }
+        }
+
+        [NotMapped]
+        public bool IsValid
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this[nameof(CompanyNameOrLastName)]) &&
+                       string.IsNullOrEmpty(this[nameof(City)]) &&
+                       string.IsNullOrEmpty(this[nameof(PersonalIdNumber)]) &&
+                       string.IsNullOrEmpty(this[nameof(TaxIdNumber)]) &&
+                       string.IsNullOrEmpty(this[nameof(PostalCode)]);
+            }
+        }
     }
 }

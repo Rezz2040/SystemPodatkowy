@@ -4,15 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using SystemPodatkowy.Data;
 using SystemPodatkowy.Models;
 using SystemPodatkowy.MVVM;
+using SystemPodatkowy.Repositories;
 
 namespace SystemPodatkowy.ViewModels
 {
     public class TaxRatesViewModel : BaseViewModel
     {
+        private readonly IGenericRepository<TaxRate> _repository;
+
         private ObservableCollection<TaxRate> _taxRatesList;
         public ObservableCollection<TaxRate> TaxRatesList
         {
@@ -29,44 +33,42 @@ namespace SystemPodatkowy.ViewModels
 
         public ICommand SaveTaxRateCommand { get; }
 
-        public TaxRatesViewModel()
+        public TaxRatesViewModel(IGenericRepository<TaxRate> repository)
         {
-            NewTaxRate = new TaxRate
-            {
-                TaxYear = 2026,
-                SubjectOfTaxation = "Budynki mieszkalne"
-            };
-
+            _repository = repository;
+            
+            NewTaxRate = new TaxRate { TaxYear = 2026, SubjectOfTaxation = "Budynki mieszkalne" };
             SaveTaxRateCommand = new RelayCommand(SaveTaxRates, CanSave);
+
             LoadTaxRates();
         }
 
         private void LoadTaxRates()
         {
-            using (var context = new TaxSystemContext())
-            {
-                var ratesFromDb = context.TaxRates
-                    .OrderByDescending(s => s.TaxYear)
-                    .ToList();
-
-                TaxRatesList = new ObservableCollection<TaxRate>(ratesFromDb);
-            }
+            var ratesFromDb = _repository.GetAll().OrderByDescending(S => S.TaxYear).ToList();
+            TaxRatesList = new ObservableCollection<TaxRate>(ratesFromDb);
         }
 
         private void SaveTaxRates(object parameter)
         {
-            using (var context = new TaxSystemContext())
+            bool alreadyExists = _repository.GetAll()
+                .Any(r => r.TaxYear == NewTaxRate.TaxYear &&
+                          r.SubjectOfTaxation.ToLower() == NewTaxRate.SubjectOfTaxation.ToLower());
+
+            if(alreadyExists)
             {
-                context.TaxRates.Add(NewTaxRate);
-                context.SaveChanges();
+                MessageBox.Show($"Staka dla {NewTaxRate.SubjectOfTaxation} na rok {NewTaxRate.TaxYear} już istnieje w bazie!",
+                                "Błąd duplikatu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
+            _repository.Add(NewTaxRate);
 
             LoadTaxRates();
 
-            NewTaxRate = new TaxRate
-            {
-                TaxYear = 2026,
-                SubjectOfTaxation = "Budynki mieszkalne"
+            NewTaxRate = new TaxRate { 
+                TaxYear = 2026, 
+                SubjectOfTaxation = "Budynki mieszkalne" 
             };
         }
 

@@ -1,4 +1,4 @@
-﻿<Window x:Class="SystemPodatkowy.GenerateDeclarationWindow"
+﻿<Window x:Class="SystemPodatkowy.Views.GenerateDeclarationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Generuj Deklarację" Height="200" Width="300" WindowStartupLocation="CenterScreen">

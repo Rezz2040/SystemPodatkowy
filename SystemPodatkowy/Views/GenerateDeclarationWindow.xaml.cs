@@ -13,20 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SystemPodatkowy.ViewModels;
 
-namespace SystemPodatkowy
+namespace SystemPodatkowy.Views
 {
-    public partial class AddTaxpayerWindow : Window
+
+    public partial class GenerateDeclarationWindow : Window
     {
-        public AddTaxpayerWindow()
+        public GenerateDeclarationWindow(int taxpayerID)
         {
             InitializeComponent();
 
-            var vm = new AddTaxpayerViewModel();
+            var vm = new GenerateDeclarationViewModel(taxpayerID);
             this.DataContext = vm;
 
             if(vm.CloseAction == null)
             {
-                vm.CloseAction = new System.Action(this.Close);
+                vm.CloseAction = new Action(this.Close);
             }
         }
     }

@@ -11,23 +11,28 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Text.RegularExpressions;
 using SystemPodatkowy.ViewModels;
 
-namespace SystemPodatkowy
+namespace SystemPodatkowy.Views
 {
-    public partial class AddPropertyAreaWindow : Window
+    public partial class AddTaxpayerWindow : Window
     {
-        public AddPropertyAreaWindow(int taxpayerID)
+        public AddTaxpayerWindow(AddTaxpayerViewModel vm)
         {
             InitializeComponent();
-
-            var vm = new AddPropertyAreaViewModel(taxpayerID);
             this.DataContext = vm;
 
             if(vm.CloseAction == null)
             {
                 vm.CloseAction = new System.Action(this.Close);
             }
+        }
+
+        private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

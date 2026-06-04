@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SystemPodatkowy.Models;
+using System.Configuration;
 
 namespace SystemPodatkowy.Data
 {
@@ -20,7 +21,9 @@ namespace SystemPodatkowy.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SystemPodatkowyBaza;Trusted_Connection=True;TrustServerCertificate=True");
+            string connectionString = ConfigurationManager.ConnectionStrings["TaxSystemDb"].ConnectionString;
+
+            optionsBuilder.UseSqlServer(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

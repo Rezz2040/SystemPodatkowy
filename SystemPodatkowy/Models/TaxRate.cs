@@ -26,6 +26,6 @@ namespace SystemPodatkowy.Models
         [Column("StawkaZaM2", TypeName = "money")]
         public decimal RatePerSqm { get; set; }
 
-        public virtual ICollection<DeclarationItem> DeclarationItem {  get; set; }
+        public virtual ICollection<DeclarationItem> DeclarationItems { get; set; }
     }
 }

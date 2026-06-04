@@ -7,22 +7,25 @@ using System.Windows.Input;
 using SystemPodatkowy.Data;
 using SystemPodatkowy.Models;
 using SystemPodatkowy.MVVM;
+using SystemPodatkowy.Repositories;
 
 namespace SystemPodatkowy.ViewModels
 {
     public class AddPaymentViewModel : BaseViewModel
     {
+        private readonly IGenericRepository<Payment> _paymentRepository;
+
         public Payment NewPayment { get; set; }
         public ICommand SaveCommand { get; }
         public Action CloseAction { get; set; }
 
-        public AddPaymentViewModel(int taxpayerID)
+        public AddPaymentViewModel(int taxpayerID, IGenericRepository<Payment> paymentRepository)
         {
-            NewPayment = new Payment
-            {
-                TaxpayerID = taxpayerID,
-                PaymentDate = DateTime.Now,
-                PaymentMethod = "Przelew bankowy"
+            _paymentRepository = paymentRepository;
+            NewPayment = new Payment { 
+                TaxpayerID = taxpayerID, 
+                PaymentDate = DateTime.Now, 
+                PaymentMethod = "Przelew bankowy" 
             };
 
             SaveCommand = new RelayCommand(SavePayment, CanSave);
@@ -30,12 +33,7 @@ namespace SystemPodatkowy.ViewModels
 
         private void SavePayment(object parameter)
         {
-            using (var context = new TaxSystemContext())
-            {
-                context.Payments.Add(NewPayment);
-                context.SaveChanges();
-            }
-
+            _paymentRepository.Add(NewPayment);
             CloseAction?.Invoke();
         }
 
